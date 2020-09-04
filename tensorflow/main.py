@@ -2,7 +2,7 @@
 import tensorflow as tf
 
 print("TF works")
-# tf.test.is_built_with_cuda()
+tf.test.is_built_with_cuda()
 
 string = tf.Variable("this is a string", tf.string)
 print(string.shape)     # tf.Tensor(0, shape=(), dtype=int32)
