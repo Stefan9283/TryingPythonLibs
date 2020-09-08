@@ -38,7 +38,6 @@ class Graph:
 
 
 
-
 class List:
 
     def __init__(self, value = None):

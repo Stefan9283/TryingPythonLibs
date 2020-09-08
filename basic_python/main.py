@@ -22,4 +22,3 @@ g.addBiPath("Giurgiu", "Bucharest", 50)
 g.addPath("Sibiu", "Giurgiu", 34)
 
 g.printGraph()
-
