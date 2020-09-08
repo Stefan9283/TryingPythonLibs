@@ -1,9 +1,7 @@
-#! /usr/bin/python3
 from pydub import AudioSegment
 from pydub.playback import play
 
 import pydub.effects as eff 
-
 
 song = AudioSegment.from_mp3("bruh.mp3")
 
@@ -15,10 +13,12 @@ for i in range(1, 3, 1):
     #result = result + new_part
     result.overlay(new_part)
 
+result.export('boosted.mp3', format='mp3')
 play(result)
 
 result_rev=result.reverse()
 play(result_rev)
+
 
 
 speed = eff.speedup(result, 1.5)
@@ -27,7 +27,8 @@ play(speed)
 
 ##############################################
 
-import pydub 
+
+
 
 from pydub import generators
 
