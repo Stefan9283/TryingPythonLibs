@@ -5,9 +5,10 @@ import OpenGL.GL as GL
 import OpenGL.GLU as GLU
 import OpenGL.GLUT as GLUT
 from OpenGL.arrays import ArrayDatatype
-
+import sys
 
 import numpy as np
+from ctypes import c_float, c_void_p, cast, sizeof
 
 window = 0
 width, height = 800, 800
@@ -44,23 +45,7 @@ def create_shader():
 
     return program
 
-def draw():
-    GL.glClearColor(0.2, 0, 0, 1)
     
-    GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-    GL.glBindVertexArray(VAO)
-    
-    GL.glDrawElements(GL.GL_TRIANGLES, len(indices), GL.GL_UNSIGNED_INT, 0)
-    #GL.glDrawArrays(GL.GL_TRIANGLES, 0, 3)
-
-    GL.glLoadIdentity()
-    GLUT.glutSwapBuffers()
-    
-
-
-coords = np.array([1, 1, 0, 0, 0, 0, 0, 1, 0], dtype='f')
-indices = np.array([0, 1, 2], dtype='uint32')
-
 GLUT.glutInit()
 GLUT.glutInitDisplayMode(GLUT.GLUT_RGBA | GLUT.GLUT_DOUBLE | GLUT.GLUT_ALPHA |
                          GLUT.GLUT_DEPTH)
@@ -79,25 +64,37 @@ shader_id = create_shader()
 GL.glUseProgram(shader_id)
 
 VAO = GL.glGenVertexArrays(1)
-
 GL.glBindVertexArray(VAO)
 
-VBO = GL.glGenBuffers(2)
-GL.glBindBuffer(GL.GL_ARRAY_BUFFER, VBO[0])
-GL.glBufferData(GL.GL_ARRAY_BUFFER, ArrayDatatype.arrayByteCount(coords), coords, GL.GL_STATIC_DRAW)
+vertices = np.array([1, 1, 0, 0, 0, 0, 0, 1, 0], dtype=np.float32).flatten()
+VBO = GL.glGenBuffers(1)
+GL.glBindBuffer(GL.GL_ARRAY_BUFFER, VBO)
+GL.glBufferData(GL.GL_ARRAY_BUFFER, vertices, GL.GL_STATIC_DRAW)
 
-EBO = GL.glGenBuffers(2)
-GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, EBO[0])
-GL.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, ArrayDatatype.arrayByteCount(indices), indices, GL.GL_STATIC_DRAW)
+indices = np.array([0, 1, 2], dtype=np.uint16)
+EBO = GL.glGenBuffers(1)
+GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, EBO)
+GL.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, indices, GL.GL_STATIC_DRAW)
+
+
 
 GL.glEnableVertexAttribArray(0)
-GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 0, None)
+GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 3 * sizeof(c_float) , cast(3 * sizeof(c_float), c_void_p))
 
 GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0)
 GL.glBindBuffer(GL.GL_ARRAY_BUFFER, 0)
-
 GL.glBindVertexArray(0)
 
+def draw():
+    GL.glClearColor(0.2, 0, 0, 1)
+    
+    GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+    GL.glBindVertexArray(VAO)
+    
+    GL.glDrawElements(GL.GL_TRIANGLES, len(indices), GL.GL_UNSIGNED_INT, 0)
+
+    GL.glLoadIdentity()
+    GLUT.glutSwapBuffers()
 
 GLUT.glutDisplayFunc(draw)
 GLUT.glutIdleFunc(draw)
